@@ -178,7 +178,7 @@ function cap(s) {
 const TREND_DISPLAY = {
   up: { label: 'Up from last week', icon: TrendingUpIcon, color: '#4ADE80' },
   down: { label: 'Down from last week', icon: TrendingDownIcon, color: '#FBBF24' },
-  steady: { label: 'Steady with last week', icon: TrendingFlatIcon, color: tokens.violetBright },
+  steady: { label: 'Steady with last week', icon: TrendingFlatIcon, color: tokens.accentText },
 };
 
 export default function WeeklySummary() {
@@ -326,7 +326,7 @@ export default function WeeklySummary() {
           exclusive
           onChange={handleChange}
           aria-label="Weekly summary test state"
-          sx={{ flexWrap: 'wrap', gap: 1, '& .MuiToggleButton-root': { borderRadius: '10px !important', border: '1px solid', borderColor: 'divider', px: 2 } }}
+          sx={{ flexWrap: 'wrap', gap: 1, '& .MuiToggleButton-root': { borderRadius: `${tokens.toggleRadius} !important`, border: '1px solid', borderColor: tokens.toggleBorder, px: 2 } }}
         >
           {TEST_STATES.map((s) => (
             <ToggleButton key={s.key} value={s.key} id={`test-state-${s.key}`} sx={{ fontSize: '0.72rem' }}>

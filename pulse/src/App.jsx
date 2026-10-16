@@ -11,26 +11,41 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
 import DatasetIcon from '@mui/icons-material/Dataset';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import HistoryIcon from '@mui/icons-material/History';
+import InsightsIcon from '@mui/icons-material/Insights';
+import GroupsIcon from '@mui/icons-material/Groups';
 import Nav from './components/Nav';
+import CrowdForecast from './components/forecast/CrowdForecast';
 import Dashboard from './components/Dashboard';
 import LogForm from './components/LogForm';
 import History from './components/History';
 import WeeklySummary from './components/WeeklySummary';
 import useEntries from './hooks/useEntries';
 import brand from './brand';
+import { MOBILE_QUERY } from './theme';
 
 /**
  * Root application component.
- * Manages view state (Dashboard / Log / History) and settings dialog.
+ * Manages view state and the settings dialog.
  * No router — simple tab switching for GitHub Pages compatibility.
  */
+const VIEWS = [
+  ...(brand.features.crowdForecast ? [{ key: 'forecast', label: 'Forecast', icon: GroupsIcon }] : []),
+  { key: 'dashboard', label: 'Dashboard', icon: DashboardIcon },
+  { key: 'log', label: 'Log', icon: AddCircleOutlineIcon },
+  { key: 'history', label: 'History', icon: HistoryIcon },
+  { key: 'summary', label: 'Summary', icon: InsightsIcon },
+];
+
 export default function App() {
   const { entries, add, update, remove, clearAll, loadSampleData } = useEntries();
-  const [view, setView] = useState(0); // 0=Dashboard, 1=Log, 2=History, 3=Summary
+  const [view, setView] = useState(VIEWS[0].key);
   const [editEntry, setEditEntry] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [confirmClear, setConfirmClear] = useState(false);
-  const isMobile = useMediaQuery('(max-width:600px)');
+  const isMobile = useMediaQuery(MOBILE_QUERY);
 
   // Handle log form submit (add or update)
   const handleLogSubmit = useCallback((entry) => {
@@ -42,10 +57,10 @@ export default function App() {
     setEditEntry(null);
   }, [add, update]);
 
-  // Navigate to Log view with a specific type pre-selected
-  const handleQuickAdd = useCallback((type) => {
+  // Navigate to Log view. TODO: pre-select `_type` in LogForm (currently ignored).
+  const handleQuickAdd = useCallback((_type) => {
     setEditEntry(null);
-    setView(1);
+    setView('log');
   }, []);
 
   // Quick-add 250 ml water
@@ -62,7 +77,7 @@ export default function App() {
   // Edit entry: switch to Log view with the entry pre-filled
   const handleEdit = useCallback((entry) => {
     setEditEntry(entry);
-    setView(1);
+    setView('log');
   }, []);
 
   // Cancel editing
@@ -74,12 +89,12 @@ export default function App() {
     <Box
       sx={{
         minHeight: '100vh',
-        pb: isMobile ? '72px' : 0, // Space for bottom nav on mobile
+        pb: isMobile ? '80px' : 0, // Space for bottom nav on mobile
         display: 'flex',
         flexDirection: 'column',
       }}
     >
-      <Nav view={view} onChangeView={setView} />
+      <Nav views={VIEWS} view={view} onChangeView={setView} />
 
       {/* Settings button */}
       <IconButton
@@ -91,8 +106,10 @@ export default function App() {
           top: isMobile ? 12 : 14,
           right: 16,
           zIndex: 1200,
-          color: 'text.secondary',
-          '&:hover': { color: 'primary.light' },
+          ...(brand.features.light && { p: '10px' }), // 44px tap target (York)
+          // York: light icon on the dark-red header band.
+          color: brand.features.light ? 'rgba(255,255,255,0.85)' : 'text.secondary',
+          '&:hover': { color: brand.features.light ? '#FFFFFF' : 'primary.light' },
         }}
       >
         <SettingsIcon />
@@ -100,28 +117,29 @@ export default function App() {
 
       {/* Main content */}
       <Box sx={{ flex: 1 }}>
-        {view === 0 && (
+        {view === 'forecast' && <CrowdForecast />}
+        {view === 'dashboard' && (
           <Dashboard
             entries={entries}
             onQuickAdd={handleQuickAdd}
             onQuickWater={handleQuickWater}
           />
         )}
-        {view === 1 && (
+        {view === 'log' && (
           <LogForm
             onSubmit={handleLogSubmit}
             editEntry={editEntry}
             onCancel={editEntry ? handleCancelEdit : undefined}
           />
         )}
-        {view === 2 && (
+        {view === 'history' && (
           <History
             entries={entries}
             onEdit={handleEdit}
             onDelete={remove}
           />
         )}
-        {view === 3 && <WeeklySummary />}
+        {view === 'summary' && <WeeklySummary />}
       </Box>
 
       <Box component="footer" sx={{ py: 2, px: 3, textAlign: 'center', color: 'text.secondary', borderTop: 1, borderColor: 'divider', fontSize: '0.85rem' }}>

@@ -24,8 +24,8 @@ Both serve at the same address, so run one at a time. Tell them apart by color: 
 
 Both variants are also deployed to GitHub Pages from the same workflow:
 
-- Pulse — https://gorvis.github.io/book-pm-management/pulse/
-- York U Fitness — https://gorvis.github.io/book-pm-management/pulse/yorku/
+- Pulse — https://liamm10.github.io/product-management/pulse/
+- York U Fitness — https://liamm10.github.io/product-management/pulse/yorku/
 
 ## Production build
 
