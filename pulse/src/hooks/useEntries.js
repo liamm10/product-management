@@ -4,37 +4,55 @@ import generateSeedData from '../data/seed';
 
 const STORAGE_KEY = 'pulse.entries';
 
+// Storage can be full or blocked (e.g. Safari private mode). Entries then live
+// in memory only rather than crashing the app.
+function save(value) {
+  try {
+    if (value == null) localStorage.removeItem(STORAGE_KEY);
+    else localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
+  } catch {
+    // Storage unavailable — keep in memory only.
+  }
+}
+
+/** Stored entries, or null if missing, unreadable or not a list. */
+function load() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    return Array.isArray(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Custom hook for managing health entries in localStorage.
- * Auto-loads seed data on first run (empty storage).
+ * Auto-loads seed data on first run (empty storage) or corrupted storage.
  */
 export default function useEntries() {
   const [entries, setEntries] = useState([]);
 
   // Load entries from localStorage on mount
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const stored = load();
     if (stored) {
-      try {
-        setEntries(JSON.parse(stored));
-      } catch {
-        // Corrupted data — start fresh with seed
-        const seed = generateSeedData();
-        setEntries(seed);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(seed));
-      }
+      setEntries(stored);
     } else {
-      // First run — load sample data
+      // First run or corrupted data — load sample data
       const seed = generateSeedData();
       setEntries(seed);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(seed));
+      save(seed);
     }
   }, []);
 
-  // Persist to localStorage whenever entries change (skip initial empty state)
-  const persist = useCallback((next) => {
-    setEntries(next);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+  // Set entries and write them to localStorage. Accepts a value or an updater
+  // function, like setState.
+  const persist = useCallback((nextOrUpdater) => {
+    setEntries((prev) => {
+      const next = typeof nextOrUpdater === 'function' ? nextOrUpdater(prev) : nextOrUpdater;
+      save(next);
+      return next;
+    });
   }, []);
 
   /** Add a new entry. Returns the created entry. */
@@ -44,37 +62,25 @@ export default function useEntries() {
       id: entry.id || uuidv4(),
       timestamp: entry.timestamp || new Date().toISOString(),
     };
-    persist((prev) => {
-      const next = [...prev, newEntry];
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-      return next;
-    });
+    persist((prev) => [...prev, newEntry]);
     return newEntry;
   }, [persist]);
 
   /** Update an existing entry by id. */
   const update = useCallback((id, changes) => {
-    persist((prev) => {
-      const next = prev.map((e) => (e.id === id ? { ...e, ...changes } : e));
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-      return next;
-    });
+    persist((prev) => prev.map((e) => (e.id === id ? { ...e, ...changes } : e)));
   }, [persist]);
 
   /** Remove an entry by id. */
   const remove = useCallback((id) => {
-    persist((prev) => {
-      const next = prev.filter((e) => e.id !== id);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-      return next;
-    });
+    persist((prev) => prev.filter((e) => e.id !== id));
   }, [persist]);
 
   /** Clear all entries. */
   const clearAll = useCallback(() => {
-    persist([]);
-    localStorage.removeItem(STORAGE_KEY);
-  }, [persist]);
+    setEntries([]);
+    save(null);
+  }, []);
 
   /** Reload sample data (replaces current entries). */
   const loadSampleData = useCallback(() => {

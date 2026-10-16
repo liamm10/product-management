@@ -30,9 +30,11 @@ All app commands run from the `pulse/` directory:
 ```bash
 cd pulse
 npm install        # install dependencies
-npm run dev        # Vite dev server — http://localhost:5173/pulse/
+npm run dev        # Vite dev server — http://localhost:5173/product-management/pulse/
 npm run build      # production build to pulse/dist/
 npm run preview    # serve the production build locally
+npm run lint       # ESLint (flat config in eslint.config.js)
+npm test           # Vitest, run once (npm run test:watch to watch)
 
 npm run dev:yorku    # dev server, York U Fitness class branding (red)
 npm run build:yorku  # production build, York U Fitness branding
@@ -40,13 +42,13 @@ npm run build:yorku  # production build, York U Fitness branding
 
 The plain `dev`/`build` scripts render **Pulse** (the default, standard look for the book). The `:yorku` scripts render the **York U Fitness** class variant. See the Branding section below.
 
-There is currently **no test runner and no linter configured**. Don't claim tests pass — there are none to run.
+Tests use **Vitest** + jsdom + React Testing Library and live next to the code they cover (`*.test.js`). `vitest.setup.js` points the global `localStorage` at jsdom's, because Node 22+ ships its own that shadows it. Run `npm run lint && npm test` before committing; CI runs both before building.
 
 ## Deployment
 
-`pulse/` is built and deployed to GitHub Pages automatically by `.github/workflows/deploy.yml` on every push to `main`. The workflow runs `npm ci` + `npm run build` inside `pulse/` and publishes `pulse/dist`. It then also runs `npm run build:yorku`, which (via the mode-aware `vite.config.js`) outputs the York U Fitness class variant into `dist/pulse/yorku`, so it deploys alongside Pulse. Result: Pulse serves at `…/pulse/` and York U Fitness at `…/pulse/yorku/`. Build order matters — Pulse first, then York, since the York output nests inside the Pulse `outDir`.
+`pulse/` is built and deployed to GitHub Pages automatically by `.github/workflows/deploy.yml` on every push to `main`. The workflow runs `npm ci`, `npm run lint`, `npm test` and `npm run build` inside `pulse/` and publishes `pulse/dist`. It then also runs `npm run build:yorku`, which (via the mode-aware `vite.config.js`) outputs the York U Fitness class variant into `dist/pulse/yorku`, so it deploys alongside Pulse. Result: Pulse serves at `…/pulse/` and York U Fitness at `…/pulse/yorku/`. Build order matters — Pulse first, then York, since the York output nests inside the Pulse `outDir`.
 
-Because the app is served from a subpath, `vite.config.js` sets `base: '/pulse/'`. Keep this in mind for any asset paths or links — the dev server and the deployed site both live under `/pulse/`.
+Because GitHub Pages serves a fork at `https://<username>.github.io/<repo>/`, `vite.config.js` sets `base` to `/<repo>/pulse/`, reading the repo name from `GITHUB_REPOSITORY` in CI and falling back to `product-management` locally. Keep this in mind for any asset paths or links — the dev server and the deployed site both live under `/pulse/`.
 
 ## Architecture
 
@@ -61,7 +63,21 @@ The app is a small client-only SPA. There is **no backend, no database, and no a
 
 ### Branding (Pulse vs York U Fitness)
 
-One codebase serves two brands. **Pulse is the default and must stay so** — it's the standard look for the book and the deployed GitHub Pages site. **York U Fitness** is an opt-in red-branded variant for the York University course, selected with Vite mode `yorku` (`npm run dev:yorku` / `build:yorku`; `.env.yorku` sets `VITE_BRAND=yorku`). Only branding differs — colors and the product name — there are no feature or data differences, and the `localStorage` key (`pulse.entries`) is intentionally shared. When adding UI color, pull from the theme tokens / `brand.js` rather than hardcoding hex values, so both variants stay consistent. Never change the default (unset `VITE_BRAND`) away from Pulse.
+One codebase serves two brands. **Pulse is the default and must stay so** — it's the standard look for the book and the deployed GitHub Pages site. **York U Fitness** is an opt-in red-branded variant for the York University course, selected with Vite mode `yorku` (`npm run dev:yorku` / `build:yorku`; `.env.yorku` sets `VITE_BRAND=yorku`). York U Fitness also adds the Crowd Forecast and a light theme (see below); the `localStorage` key (`pulse.entries`) is intentionally shared. When adding UI color, pull from the theme tokens / `brand.js` rather than hardcoding hex values, so both variants stay consistent. Never change the default (unset `VITE_BRAND`) away from Pulse.
+
+### Crowd Forecast (York U Fitness only)
+
+Our group's MVP (Must-have, top RICE score). It's the York U Fitness home screen, switched on by `brand.features.crowdForecast`; Pulse never shows it. `brand.features.light` turns on the light yorku.ca-style theme in `theme.js`: white page, grey `#EAEAEC` panels, charcoal `#343045` text, York bright red `#D0343E` and dark red `#80170E` (header band). All York colors are WCAG AA-checked on white and on the grey panel; use the `tokens` (e.g. `tokens.accentText`, `tokens.chartAxis`, `tokens.focusRing`) rather than hardcoding colors so both brands stay correct.
+
+- `src/forecast/engine.js` — pure forecast logic (`buildForecast`, tiers, opening hours, class-time overlap). All numbers are computed here; components only display them. PRD guardrails are enforced here, so put new guardrail logic here too.
+- `src/forecast/config.js` — facility capacity, opening hours, tier limits (Low < 40%, Medium 40–75%, High > 75%), refresh interval. Capacity and hours are **placeholders** until confirmed with York Athletics.
+- `src/forecast/mockData.js` — simulated check-in history and live readings (seeded). This is the seam for real data: replace `generateHistory` / `generateLive` with reads from the Tait McKenzie check-in database.
+- `src/forecast/scenarios.js` — the PRD's six eval states plus "no data", selectable in the UI under "Prototype test states".
+- `src/forecast/engine.test.js` — one test per eval state. Keep these passing; they are the go/no-go bar.
+- `src/hooks/useCrowdForecast.js` (feeds the engine, refreshes every 30s) and `src/hooks/useClassBlocks.js` (manual class times in localStorage under `yorku.classBlocks`).
+- UI lives in `src/components/forecast/`. Tier colors come from `tokens.tier` and are always paired with a text label.
+
+Out of scope per the PRD: push alerts, per-machine availability, calendar sync, streaks, gym buddy.
 
 ### Entry data model
 

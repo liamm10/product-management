@@ -128,7 +128,7 @@ export default function History({ entries, onEdit, onDelete }) {
                     px: 1.5,
                     '&.Mui-selected': {
                       backgroundColor: tokens.accentDim15,
-                      color: tokens.violetBright,
+                      color: tokens.accentText,
                     },
                   }}
                 >
@@ -156,11 +156,11 @@ export default function History({ entries, onEdit, onDelete }) {
           size="small"
           aria-label="Filter entries by type"
         >
-          <ToggleButton value="all" id="filter-all" sx={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', fontFamily: '"Space Grotesk", sans-serif', px: 1.5, '&.Mui-selected': { backgroundColor: tokens.accentDim15, color: tokens.violetBright } }}>
+          <ToggleButton value="all" id="filter-all" sx={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', fontFamily: '"Space Grotesk", sans-serif', px: 1.5, '&.Mui-selected': { backgroundColor: tokens.accentDim15, color: tokens.accentText } }}>
             All
           </ToggleButton>
           {Object.entries(TYPE_LABELS).map(([key, label]) => (
-            <ToggleButton key={key} value={key} id={`filter-${key}`} sx={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', fontFamily: '"Space Grotesk", sans-serif', px: 1.5, '&.Mui-selected': { backgroundColor: tokens.accentDim15, color: tokens.violetBright } }}>
+            <ToggleButton key={key} value={key} id={`filter-${key}`} sx={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', fontFamily: '"Space Grotesk", sans-serif', px: 1.5, '&.Mui-selected': { backgroundColor: tokens.accentDim15, color: tokens.accentText } }}>
               {label}
             </ToggleButton>
           ))}

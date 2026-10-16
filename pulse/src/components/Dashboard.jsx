@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import WaterDropIcon from '@mui/icons-material/WaterDrop';

@@ -56,7 +56,7 @@ export default function TrendChart({ data = [], dataKey = 'value', xKey = 'date'
         {!mini && (
           <XAxis
             dataKey={xKey}
-            stroke="#8E8EA0"
+            stroke={tokens.chartAxis}
             fontSize={12}
             tickLine={false}
             axisLine={false}
@@ -65,12 +65,12 @@ export default function TrendChart({ data = [], dataKey = 'value', xKey = 'date'
 
         {!mini && (
           <YAxis
-            stroke="#8E8EA0"
+            stroke={tokens.chartAxis}
             fontSize={12}
             tickLine={false}
             axisLine={false}
             width={40}
-            label={label ? { value: label, angle: -90, position: 'insideLeft', fill: '#8E8EA0', fontSize: 12 } : undefined}
+            label={label ? { value: label, angle: -90, position: 'insideLeft', fill: tokens.chartAxis, fontSize: 12 } : undefined}
           />
         )}
 
@@ -80,10 +80,10 @@ export default function TrendChart({ data = [], dataKey = 'value', xKey = 'date'
               backgroundColor: tokens.surfaceRaised,
               border: `1px solid ${tokens.borderViolet}`,
               borderRadius: 8,
-              color: '#F5F5FA',
+              color: tokens.text,
               fontSize: 13,
             }}
-            labelStyle={{ color: '#8E8EA0' }}
+            labelStyle={{ color: tokens.chartAxis }}
             cursor={{ stroke: tokens.violet, strokeWidth: 1, strokeDasharray: '4 4' }}
           />
         )}
@@ -95,7 +95,7 @@ export default function TrendChart({ data = [], dataKey = 'value', xKey = 'date'
           strokeWidth={2}
           fill={`url(#${gradientId})`}
           dot={false}
-          activeDot={mini ? false : { r: 4, fill: tokens.violetBright, stroke: '#0A0A0F', strokeWidth: 2 }}
+          activeDot={mini ? false : { r: 4, fill: tokens.violetBright, stroke: tokens.page, strokeWidth: 2 }}
         />
       </AreaChart>
     </ResponsiveContainer>

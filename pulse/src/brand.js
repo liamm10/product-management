@@ -2,7 +2,7 @@
  * Brand configuration for the app.
  *
  * `pulse` is the DEFAULT and must stay the standard look for the book and the
- * deployed site (gorvis.github.io/book-pm-management/pulse/). `yorku` is an
+ * deployed Pulse site. `yorku` is an
  * opt-in classroom variant selected at build time with Vite mode `yorku`:
  *
  *   npm run dev:yorku      npm run build:yorku
@@ -10,9 +10,11 @@
  * which loads `.env.yorku` (VITE_BRAND=yorku). A plain `npm run dev` / `build`
  * has no VITE_BRAND set and therefore renders Pulse, unchanged.
  *
- * Only branding differs between the two — colors and the product name. There
- * are no feature or data differences. The localStorage key is intentionally
- * shared (see useEntries.js) and is NOT branded.
+ * Branding (colors, product name) differs between the two, and York U Fitness
+ * also turns on `features`: the Crowd Forecast home screen (our group's MVP,
+ * see artifacts) and the light yorku.ca-style theme. Pulse keeps every flag
+ * off so the book's standard app is unchanged. The localStorage key for health
+ * entries is intentionally shared (see useEntries.js) and is NOT branded.
  */
 
 const BRANDS = {
@@ -23,14 +25,21 @@ const BRANDS = {
     accentRGB: '139,92,246',
     accentBrightRGB: '168,85,247',
     surfaceRaised: '#1C1B27',
+    tagline: 'Health Tracker',
+    features: { crowdForecast: false, light: false },
   },
   yorku: {
     name: 'York U Fitness',
-    accent: '#E31837',        // York Red (PMS 186)
-    accentBright: '#FF3B54',  // brighter York red for glows/highlights on dark
-    accentRGB: '227,24,55',
-    accentBrightRGB: '255,59,84',
+    // York's two web reds (yorku.ca header): the bright band and the dark nav band.
+    accent: '#D0343E',        // York bright red — buttons, highlights, glows
+    accentBright: '#D0343E',
+    accentRGB: '208,52,62',
+    accentBrightRGB: '208,52,62',
+    accentDeep: '#80170E',    // York dark red — header band, ambient depth
+    accentDeepRGB: '128,23,14',
     surfaceRaised: '#1C1B27',
+    tagline: 'Crowd Forecast',
+    features: { crowdForecast: true, light: true },
   },
 };
 

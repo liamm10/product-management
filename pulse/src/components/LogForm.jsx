@@ -141,7 +141,7 @@ export default function LogForm({ onSubmit, editEntry = null, onCancel }) {
                     fontFamily: '"Space Grotesk", sans-serif',
                     '&.Mui-selected': {
                       backgroundColor: tokens.accentDim15,
-                      color: tokens.violetBright,
+                      color: tokens.accentText,
                       borderColor: tokens.accentBorder40,
                     },
                   }}
