@@ -2,7 +2,7 @@
  * Brand configuration for the app.
  *
  * `pulse` is the DEFAULT and must stay the standard look for the book and the
- * deployed site (liamm10.github.io/product-management/pulse/). `yorku` is an
+ * deployed Pulse site. `yorku` is an
  * opt-in classroom variant selected at build time with Vite mode `yorku`:
  *
  *   npm run dev:yorku      npm run build:yorku

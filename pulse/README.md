@@ -20,12 +20,9 @@ npm run build        # Pulse production build
 npm run build:yorku  # York U Fitness production build
 ```
 
-Both serve at the same address, so run one at a time. Tell them apart by color: violet = Pulse, red = York U Fitness. The only difference between the two is branding (colors and the product name) — no feature or data differences. Branding lives in `src/brand.js`; the York variant is selected by Vite mode `yorku` (`.env.yorku` sets `VITE_BRAND=yorku`). A plain `npm run dev`/`build` sets nothing, so it renders Pulse.
+Both serve at the same address, so run one at a time. Tell them apart by color: violet = Pulse, red = York U Fitness. York U Fitness also adds the Crowd Forecast home screen (our group's MVP) and a light yorku.ca-style theme; Pulse is unchanged. Branding lives in `src/brand.js`; the York variant is selected by Vite mode `yorku` (`.env.yorku` sets `VITE_BRAND=yorku`). A plain `npm run dev`/`build` sets nothing, so it renders Pulse.
 
-Both variants are also deployed to GitHub Pages from the same workflow:
-
-- Pulse — https://liamm10.github.io/product-management/pulse/
-- York U Fitness — https://liamm10.github.io/product-management/pulse/yorku/
+The York U Fitness prototype is shared as a Bolt project (see the top-level README), not through GitHub Pages.
 
 ## Production build
 

@@ -4,7 +4,7 @@
 
 **Pulse** is a personal health tracker where you manually log four things — **food, steps, water, and sleep** — as often as you like, edit or delete any entry, and see your trends over time in charts. It is the running case product for the textbook: a deliberately minimal app that students clone, study, and extend.
 
-🔗 **Live demo (this fork):** https://liamm10.github.io/product-management/pulse/ · York U Fitness variant: https://liamm10.github.io/product-management/pulse/yorku/
+🔗 **Live prototype (York U Fitness):** shared as a Bolt project, link coming soon. To run it locally: `cd pulse && npm install && npm run dev:yorku`
 
 > Forked from [gorvis/book-pm-management](https://github.com/gorvis/book-pm-management) for a York University product management course.
 

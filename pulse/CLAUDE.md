@@ -48,7 +48,7 @@ Tests use **Vitest** + jsdom + React Testing Library and live next to the code t
 
 `pulse/` is built and deployed to GitHub Pages automatically by `.github/workflows/deploy.yml` on every push to `main`. The workflow runs `npm ci`, `npm run lint`, `npm test` and `npm run build` inside `pulse/` and publishes `pulse/dist`. It then also runs `npm run build:yorku`, which (via the mode-aware `vite.config.js`) outputs the York U Fitness class variant into `dist/pulse/yorku`, so it deploys alongside Pulse. Result: Pulse serves at `…/pulse/` and York U Fitness at `…/pulse/yorku/`. Build order matters — Pulse first, then York, since the York output nests inside the Pulse `outDir`.
 
-Because GitHub Pages serves this fork at `https://liamm10.github.io/product-management/`, `vite.config.js` sets `base` to `/<repo>/pulse/`, reading the repo name from `GITHUB_REPOSITORY` in CI and falling back to `product-management` locally. Keep this in mind for any asset paths or links — the dev server and the deployed site both live under `/pulse/`.
+Because GitHub Pages serves a fork at `https://<username>.github.io/<repo>/`, `vite.config.js` sets `base` to `/<repo>/pulse/`, reading the repo name from `GITHUB_REPOSITORY` in CI and falling back to `product-management` locally. Keep this in mind for any asset paths or links — the dev server and the deployed site both live under `/pulse/`.
 
 ## Architecture
 
@@ -63,7 +63,7 @@ The app is a small client-only SPA. There is **no backend, no database, and no a
 
 ### Branding (Pulse vs York U Fitness)
 
-One codebase serves two brands. **Pulse is the default and must stay so** — it's the standard look for the book and the deployed GitHub Pages site. **York U Fitness** is an opt-in red-branded variant for the York University course, selected with Vite mode `yorku` (`npm run dev:yorku` / `build:yorku`; `.env.yorku` sets `VITE_BRAND=yorku`). Only branding differs — colors and the product name — there are no feature or data differences, and the `localStorage` key (`pulse.entries`) is intentionally shared. When adding UI color, pull from the theme tokens / `brand.js` rather than hardcoding hex values, so both variants stay consistent. Never change the default (unset `VITE_BRAND`) away from Pulse.
+One codebase serves two brands. **Pulse is the default and must stay so** — it's the standard look for the book and the deployed GitHub Pages site. **York U Fitness** is an opt-in red-branded variant for the York University course, selected with Vite mode `yorku` (`npm run dev:yorku` / `build:yorku`; `.env.yorku` sets `VITE_BRAND=yorku`). York U Fitness also adds the Crowd Forecast and a light theme (see below); the `localStorage` key (`pulse.entries`) is intentionally shared. When adding UI color, pull from the theme tokens / `brand.js` rather than hardcoding hex values, so both variants stay consistent. Never change the default (unset `VITE_BRAND`) away from Pulse.
 
 ### Crowd Forecast (York U Fitness only)
 
